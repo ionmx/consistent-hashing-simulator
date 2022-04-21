@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consistent Hashing Example</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <script  type="module"  src="main.js"></script>
+  <style>
+    #canvas {
+      width: 400px;
+      height: 400px;
+      border:  1px solid #ddd;
+      display:  block;
+   }
+   #log {
+     white-space:  pre;
+     font-family: monospace;
+   }
+   table tr td {
+    vertical-align: text-top;
+   }
+  </style>
+</head>
+<body>
+  <div class="columns">
+    <div class="column is-narrow">
+      <canvas id="canvas"></canvas>
+      <table class="table is-fullwidth">
+        <tr><td>V Nodes:</td><td><input id="vnodes" type="number" class="input" value="0" min="0" max="20"></td></tr>
+        <tr><td colspan="2"><button id="add-server" class="button is-fullwidth is-success">Add Server</button></td></tr>
+      </table>
+    </div>
+    <div class="column">
+      <div id="log"></div>
+    </div>
+  </div>
+</body>
+</html>
