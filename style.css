@@ -1,0 +1,59 @@
+body {
+  padding-bottom:  8em;
+}
+#canvas {
+  width: 400px;
+  height: 400px;
+  display:  block;
+}
+#log {
+  white-space:  pre;
+  font-family: monospace;
+  color:  #eee;
+  background-color: #333;
+  padding: 1em;
+  width:  100%;
+  max-width:  100%;
+  overflow: hidden;
+  position: fixed;
+  bottom:  0;
+}
+table tr td {
+  vertical-align: middle !important;
+}
+.simulate-table th,
+.simulate-table td {
+  text-align: center !important;
+}
+
+.tr-totals {
+  border-top:  2px solid #000 !important;
+  font-weight:  500;
+}
+
+.delete-server {
+  color:  #ff1744;
+  font-weight:  bold;
+}
+
+.delete-server:hover {
+  cursor:  pointer;
+}
+
+.main-server td {
+  font-weight:  500;
+}
+
+.virtual-server td {
+  text-color:  #777;
+  font-size:  80%;
+}
+
+.sub {
+	font-size:  60%;
+}
+
+.server-header td {
+	background:  #b2ebf2;
+	font-weight:  800;
+}
