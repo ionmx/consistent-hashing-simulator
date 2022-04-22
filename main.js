@@ -74,6 +74,7 @@ function createTable(servers) {
   let th3 = document.createElement('th'); 
   let th4 = document.createElement('th'); 
   let tr, td, span;
+  let c = 0;
   let prev = '';
 
   table.classList.add('table');
@@ -104,7 +105,7 @@ function createTable(servers) {
 
     td = document.createElement('td');
     td.id = 'keys_' + key;
-    td.innerHTML = value.cache;
+    td.innerHTML = value.cache_size;
     tr.appendChild(td);
 
     td = document.createElement('td');
@@ -125,31 +126,38 @@ function createTable(servers) {
       span.classList.add('delete-server');
       span.innerHTML = '×';
       if (vnodes > 0) {
+        let bg_color = colors[c % colors.length];
         let trhead = document.createElement('tr');
         trhead.classList.add('server-header');
         trhead.classList.add('server_' + value.server_name);
         let tdh;
 
         tdh = document.createElement('td');
+        tdh.style.backgroundColor = bg_color;
         tdh.innerHTML = value.server_name;
         trhead.appendChild(tdh);
 
         tdh = document.createElement('td');
+        tdh.style.backgroundColor = bg_color;
         tdh.id = 'keys_server_' + value.server_name;
         tdh.innerHTML = 0;
         trhead.appendChild(tdh);
 
         tdh = document.createElement('td');
+        tdh.style.backgroundColor = bg_color;
         tdh.id = 'perc_server_' + value.server_name;
         tdh.classList.add('server_percentage');
         tdh.innerHTML = '0%';
         trhead.appendChild(tdh);
 
         tdh = document.createElement('td');
+        tdh.classList.add('brighter');
+        tdh.style.backgroundColor = bg_color;
         tdh.appendChild(span);
         trhead.appendChild(tdh);
 
         table.appendChild(trhead);
+        c += 1;
       } else {
         td.appendChild(span);  
       }
@@ -162,6 +170,8 @@ function createTable(servers) {
     tr.appendChild(td);
 
     table.appendChild(tr);
+
+
 
   });
 
