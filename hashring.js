@@ -2,7 +2,8 @@ var crc32=function(r){for(var a,o=[],c=0;c<256;c++){a=c;for(var f=0;f<8;f++)a=1&
 var alpha='ABCDEFGHIJKLMNOPQRSTUVXYZ'
 
 const servers = new Map();
-var server_list = new Array();
+const real_servers = new Map();
+var server_qty = 0
 var max = 0
 var min = Number.MAX_SAFE_INTEGER;
 
@@ -11,7 +12,8 @@ function hash_function(string) {
 }
 
 function addServer(vnodes) {
-    let server_name = alpha.charAt(server_list.length)
+    let server_name = alpha.charAt(server_qty)
+    server_qty += 1
     let hash = hash_function(server_name)
     if (hash > max) {
       max = hash
@@ -19,9 +21,9 @@ function addServer(vnodes) {
     if (hash < min) {
       min = hash
     }
+    real_servers.set(server_name,{cache: 0});
     servers.set(hash, {server_name: server_name, cache: 0});
     var sn = '';
-    server_list.push(server_name);
     for (var i = 0; i < vnodes; i++) {
       sn = server_name + '.' + i;
       hash = hash_function(sn)
@@ -35,15 +37,52 @@ function addServer(vnodes) {
     }
 }
 
+function removeServer(server_name) {
+  let caches = new Map();
+  let ns, rs;
+
+
+  // Get caches
+  servers.forEach( (value, key) => {
+    if (value.server_name == server_name) {
+      caches.set(key,value.cache);  
+    }
+  });
+
+  // Remove server and vnodes 
+  caches.forEach((v, k) => {
+    servers.delete(k);
+  });
+  
+  // Reassign cache
+  caches.forEach((v, k) => {
+    ns = servers.get(getClosest(k));
+    ns.cache += v;
+    rs = real_servers.get(ns.server_name)
+    rs.cache += v;
+
+  });
+  
+
+  real_servers.delete(server_name);
+  
+}
+
 function addToCache(str) {
   let k = getKey(str);
   let server = servers.get(k);
+  let rs = real_servers.get(server.server_name);
   server.cache += 1;
-  return [k, server.server_name, server.cache];
+  rs.cache += 1
+  return [k, server.server_name, server.cache, rs.cache];
 }
 
 function getKey(str) {
   let hash = hash_function(str);
+  return getClosest(hash);
+}
+
+function getClosest(hash) {
   let keys = Array.from( servers.keys() );
   keys.sort((a,b)=>a-b);
   let closest = binarySearch(keys, hash);
@@ -58,9 +97,8 @@ function resetRing() {
   max = 0
   min = Number.MAX_SAFE_INTEGER;
   servers.clear();
-  while(server_list.length > 0) {
-    server_list.pop();
-  }
+  real_servers.clear();
+  server_qty = 0;
 }
 
 function binarySearch(arr, target, lo = 0, hi = arr.length - 1) {
@@ -86,4 +124,4 @@ function getMaxHash() {
   return max;
 }
 
-export { addServer, addToCache, resetRing, getServers, getMinHash, getMaxHash }
+export { addServer, removeServer, addToCache, resetRing, getServers, getMinHash, getMaxHash }
