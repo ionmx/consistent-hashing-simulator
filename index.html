@@ -1,37 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Consistent Hashing Example</title>
+  <title>Consistent Hashing Simulator</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
   <script  type="module"  src="main.js"></script>
   <style>
+    body {
+      padding-bottom:  8em;
+    }
     #canvas {
       width: 400px;
       height: 400px;
-      border:  1px solid #ddd;
       display:  block;
    }
    #log {
+     margin: 0;
      white-space:  pre;
      font-family: monospace;
+     color:  #eee;
+     background-color: #333;
+     padding: 1em;
+     width:  100%;
+     max-width:  100%;
+     overflow: hidden;
+     position: fixed;
+     bottom:  0;
    }
    table tr td {
-    vertical-align: text-top;
+    vertical-align: middle !important;
+   }
+   .simulate-table th,
+   .simulate-table td {
+     text-align: center !important;
    }
   </style>
 </head>
 <body>
+  <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand"><a class="navbar-item" href="index.html">Consistent Hashing Simulator</a></div>
+
+    
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/ionmx/consistent-hashing-simulator"><img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxwYXRoIGQ9Ik03Ljk5OSAwQzMuNTgyIDAgMCAzLjU5NiAwIDguMDMyYTguMDMxIDguMDMxIDAgMCAwIDUuNDcyIDcuNjIxYy40LjA3NC41NDYtLjE3NC41NDYtLjM4NyAwLS4xOTEtLjAwNy0uNjk2LS4wMTEtMS4zNjYtMi4yMjUuNDg1LTIuNjk1LTEuMDc3LTIuNjk1LTEuMDc3LS4zNjMtLjkyOC0uODg4LTEuMTc1LS44ODgtMS4xNzUtLjcyNy0uNDk4LjA1NC0uNDg4LjA1NC0uNDg4LjgwMy4wNTcgMS4yMjUuODI4IDEuMjI1LjgyOC43MTQgMS4yMjcgMS44NzMuODczIDIuMzI5LjY2Ny4wNzItLjUxOS4yNzktLjg3My41MDgtMS4wNzQtMS43NzYtLjIwMy0zLjY0NC0uODkyLTMuNjQ0LTMuOTY5IDAtLjg3Ny4zMTItMS41OTQuODI0LTIuMTU2LS4wODMtLjIwMy0uMzU3LTEuMDIuMDc4LTIuMTI1IDAgMCAuNjcyLS4yMTYgMi4yLjgyM2E3LjYzMyA3LjYzMyAwIDAgMSAyLjAwMy0uMjcgNy42NSA3LjY1IDAgMCAxIDIuMDAzLjI3MWMxLjUyNy0xLjAzOSAyLjE5OC0uODIzIDIuMTk4LS44MjMuNDM2IDEuMTA2LjE2MiAxLjkyMi4wOCAyLjEyNS41MTMuNTYyLjgyMiAxLjI3OS44MjIgMi4xNTYgMCAzLjA4NS0xLjg3IDMuNzY0LTMuNjUyIDMuOTYzLjI4Ny4yNDguNTQzLjczOC41NDMgMS40ODcgMCAxLjA3NC0uMDEgMS45NC0uMDEgMi4yMDMgMCAuMjE1LjE0NC40NjUuNTUuMzg2QTguMDMyIDguMDMyIDAgMCAwIDE2IDguMDMyQzE2IDMuNTk2IDEyLjQxOCAwIDcuOTk5IDB6Ii8+PG1ldGFkYXRhPjxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM6cmRmcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wMS9yZGYtc2NoZW1hIyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIj48cmRmOkRlc2NyaXB0aW9uIGFib3V0PSJodHRwczovL2ljb25zY291dC5jb20vbGVnYWwjbGljZW5zZXMiIGRjOnRpdGxlPSJnaXRodWIsc29jaWFsLHNvbGlkLGUiIGRjOmRlc2NyaXB0aW9uPSJnaXRodWIsc29jaWFsLHNvbGlkLGUiIGRjOnB1Ymxpc2hlcj0iSWNvbnNjb3V0IiBkYzpkYXRlPSIyMDE4LTAzLTA1IiBkYzpmb3JtYXQ9ImltYWdlL3N2Zyt4bWwiIGRjOmxhbmd1YWdlPSJlbiI+PGRjOmNyZWF0b3I+PHJkZjpCYWc+PHJkZjpsaT5QaXhlbCBJY29uczwvcmRmOmxpPjwvcmRmOkJhZz48L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwvbWV0YWRhdGE+PC9zdmc+" width="48"></a>
+    </div>
+  </nav>
+  <div class="container">
   <div class="columns">
     <div class="column is-narrow">
       <canvas id="canvas"></canvas>
       <table class="table is-fullwidth">
-        <tr><td>V Nodes:</td><td><input id="vnodes" type="number" class="input" value="0" min="0" max="20"></td></tr>
-        <tr><td colspan="2"><button id="add-server" class="button is-fullwidth is-success">Add Server</button></td></tr>
+        <tr><td>Servers:</td><td><input id="qty" type="number" class="input" value="5" min="0" max="20"></td></tr>
+        <tr><td>V Nodes per server:</td><td><input id="vnodes" type="number" class="input" value="0" min="0" max="20"></td></tr>
+        <tr><td colspan="2"><button id="add-server-button" class="button is-fullwidth" disabled="disabled">Add Server On The Fly</button></td></tr>
+        <tr><td colspan="2"><button id="simulate-button" class="button is-fullwidth is-success">Simulate</button></td></tr>
       </table>
     </div>
     <div class="column">
-      <div id="log"></div>
+      <div id="simulation-area"></div>
     </div>
   </div>
+  </div>
+  <div id="log"></div>
 </body>
 </html>

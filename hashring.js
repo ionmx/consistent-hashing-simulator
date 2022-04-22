@@ -6,10 +6,6 @@ var server_list = new Array();
 var max = 0
 var min = Number.MAX_SAFE_INTEGER;
 
-function log(msg) {
-  document.getElementById("log").innerHTML = document.getElementById("log").innerHTML + msg + "\n"
-}
-
 function hash_function(string) {
     return crc32(string) % 360;
 }
@@ -23,7 +19,7 @@ function addServer(vnodes) {
     if (hash < min) {
       min = hash
     }
-    servers.set(hash, server_name);
+    servers.set(hash, {server_name: server_name, cache: 0});
     var sn = '';
     server_list.push(server_name);
     for (var i = 0; i < vnodes; i++) {
@@ -35,17 +31,59 @@ function addServer(vnodes) {
       if (hash < min) {
         min = hash
       }
-      servers.set(hash, server_name);
+      servers.set(hash, {server_name: server_name, cache: 0});
     }
-    log('ADD Server ' + server_name + ' (+'+ vnodes + ' vnodes)');
 }
 
-function getKey() {
+function addToCache(str) {
+  let k = getKey(str);
+  let server = servers.get(k);
+  server.cache += 1;
+  return [k, server.server_name, server.cache];
+}
 
+function getKey(str) {
+  let hash = hash_function(str);
+  let keys = Array.from( servers.keys() );
+  keys.sort((a,b)=>a-b);
+  let closest = binarySearch(keys, hash);
+  return closest;
 }
 
 function getServers() {
-    return [servers, min, max];
+    return servers;
 }
 
-export { addServer, getKey, getServers }
+function resetRing() {
+  max = 0
+  min = Number.MAX_SAFE_INTEGER;
+  servers.clear();
+  while(server_list.length > 0) {
+    server_list.pop();
+  }
+}
+
+function binarySearch(arr, target, lo = 0, hi = arr.length - 1) {
+   if (target < arr[lo]) {return arr[0]}
+   if (target > arr[hi]) {return arr[hi]}
+   
+   const mid = Math.floor((hi + lo) / 2);
+
+   return hi - lo < 2 
+     ? (target - arr[lo]) < (arr[hi] - target) ? arr[lo] : arr[hi]
+     : target < arr[mid]
+       ? binarySearch(arr, target, lo, mid)
+       : target > arr[mid] 
+         ? binarySearch(arr, target, mid, hi)
+         : arr[mid]
+}
+
+function getMinHash() {
+  return min;
+}
+
+function getMaxHash() {
+  return max;
+}
+
+export { addServer, addToCache, resetRing, getServers, getMinHash, getMaxHash }
