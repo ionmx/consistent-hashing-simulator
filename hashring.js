@@ -1,5 +1,5 @@
 var crc32=function(r){for(var a,o=[],c=0;c<256;c++){a=c;for(var f=0;f<8;f++)a=1&a?3988292384^a>>>1:a>>>1;o[c]=a}for(var n=-1,t=0;t<r.length;t++)n=n>>>8^o[255&(n^r.charCodeAt(t))];return(-1^n)>>>0};
-var alpha='ABCDEFGHIJKLMNOPQRSTUVXYZ'
+const alpha='ABCDEFGHIJKLMNOPQRSTUVXYZ'
 
 const servers = new Map();
 const real_servers = new Map();
@@ -21,8 +21,8 @@ function addServer(vnodes) {
     if (hash < min) {
       min = hash
     }
-    real_servers.set(server_name,{cache: 0});
-    servers.set(hash, {server_name: server_name, cache: 0});
+    real_servers.set(server_name,{cache_size: 0 });
+    servers.set(hash, {server_name: server_name, cache_size: 0});
     var sn = '';
     for (var i = 0; i < vnodes; i++) {
       sn = server_name + '.' + i;
@@ -33,7 +33,7 @@ function addServer(vnodes) {
       if (hash < min) {
         min = hash
       }
-      servers.set(hash, {server_name: server_name, cache: 0});
+      servers.set(hash, {server_name: server_name, cache_size: 0});
     }
 }
 
@@ -45,7 +45,7 @@ function removeServer(server_name) {
   // Get caches
   servers.forEach( (value, key) => {
     if (value.server_name == server_name) {
-      caches.set(key,value.cache);  
+      caches.set(key,value.cache_size);  
     }
   });
 
@@ -57,10 +57,9 @@ function removeServer(server_name) {
   // Reassign cache
   caches.forEach((v, k) => {
     ns = servers.get(getClosest(k));
-    ns.cache += v;
+    ns.cache_size += v;
     rs = real_servers.get(ns.server_name)
-    rs.cache += v;
-
+    rs.cache_size += v;
   });
   
 
@@ -72,9 +71,9 @@ function addToCache(str) {
   let k = getKey(str);
   let server = servers.get(k);
   let rs = real_servers.get(server.server_name);
-  server.cache += 1;
-  rs.cache += 1
-  return [k, server.server_name, server.cache, rs.cache];
+  server.cache_size += 1;
+  rs.cache_size += 1
+  return [k, server.server_name, server.cache_size, rs.cache_size];
 }
 
 function getKey(str) {
