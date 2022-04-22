@@ -34,6 +34,7 @@ table tr td {
 .delete-server {
   color:  #ff1744;
   font-weight:  bold;
+  font-size:  150%;
 }
 
 .delete-server:hover {
@@ -54,6 +55,10 @@ table tr td {
 }
 
 .server-header td {
-	background:  #b2ebf2;
+	color: #fff;
 	font-weight:  800;
+}
+
+.brighter {
+  filter: brightness(150%);
 }
