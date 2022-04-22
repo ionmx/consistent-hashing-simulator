@@ -21,8 +21,10 @@ body {
 table tr td {
   vertical-align: middle !important;
 }
+
 .simulate-table th,
 .simulate-table td {
+  font-size:  85%;
   text-align: center !important;
 }
 
