@@ -63,6 +63,18 @@ document.getElementById("add-server-button").addEventListener("click", function(
   createTable(servers);
 });
 
+var deleteServer = function() {
+  let key = this.getAttribute("data-key");
+  let server_name = this.getAttribute("data-server");
+  let servers = getServers();
+  removeServer(server_name);
+  let trs = document.getElementsByClassName("server_" + server_name);
+  while(trs.length > 0){
+    trs[0].parentNode.removeChild(trs[0]);
+  }
+  drawServers(servers, getMinHash(), getMaxHash());
+}
+
 
 function createTable(servers) {
   document.getElementById('simulation-area').replaceChildren();
@@ -208,17 +220,6 @@ function createTable(servers) {
       spans[i].addEventListener('click', deleteServer, false);
   }
   
-}
-
-
-var deleteServer = function() {
-  let key = this.getAttribute("data-key");
-  let server_name = this.getAttribute("data-server");
-  removeServer(server_name);
-  let trs = document.getElementsByClassName("server_" + server_name);
-  while(trs.length > 0){
-    trs[0].parentNode.removeChild(trs[0]);
-  }
 }
 
 function startProcess() {
