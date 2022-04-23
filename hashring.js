@@ -22,7 +22,7 @@ function addServer(vnodes) {
       min = hash
     }
     real_servers.set(server_name,{cache_size: 0 });
-    servers.set(hash, {server_name: server_name, cache_size: 0});
+    servers.set(hash, {server_name: server_name, cache_size: 0, cache: new Map() });
     var sn = '';
     for (var i = 0; i < vnodes; i++) {
       sn = server_name + '.' + i;
@@ -33,7 +33,7 @@ function addServer(vnodes) {
       if (hash < min) {
         min = hash
       }
-      servers.set(hash, {server_name: server_name, cache_size: 0});
+      servers.set(hash, {server_name: server_name, cache_size: 0, cache: new Map() });
     }
 }
 
@@ -68,17 +68,29 @@ function removeServer(server_name) {
 }
 
 function addToCache(str) {
-  let k = getKey(str);
+  let hash = hash_function(str);
+  let k = getClosest(hash)
   let server = servers.get(k);
   let rs = real_servers.get(server.server_name);
+  let dl = false;
   server.cache_size += 1;
   rs.cache_size += 1
-  return [k, server.server_name, server.cache_size, rs.cache_size];
-}
+  
+  if (server.cache.has(hash)) {
+    dl = true;
+    let c = server.cache.get(hash);
+    c.push(str);
+  } else {
+    server.cache.set(hash, [str]);
+  }
+  if (dl) {
+    console.log(server.cache);  
+  }
+  
 
-function getKey(str) {
-  let hash = hash_function(str);
-  return getClosest(hash);
+  // server.cache.add(hash, str);
+  // console.log(server);
+  return [k, server.server_name, server.cache_size, rs.cache_size];
 }
 
 function getClosest(hash) {
