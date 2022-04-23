@@ -72,24 +72,17 @@ function addToCache(str) {
   let k = getClosest(hash)
   let server = servers.get(k);
   let rs = real_servers.get(server.server_name);
-  let dl = false;
+  
   server.cache_size += 1;
   rs.cache_size += 1
   
   if (server.cache.has(hash)) {
-    dl = true;
     let c = server.cache.get(hash);
     c.push(str);
   } else {
     server.cache.set(hash, [str]);
   }
-  if (dl) {
-    console.log(server.cache);  
-  }
-  
 
-  // server.cache.add(hash, str);
-  // console.log(server);
   return [k, server.server_name, server.cache_size, rs.cache_size];
 }
 
