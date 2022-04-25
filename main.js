@@ -67,12 +67,14 @@ var deleteServer = function() {
   let key = this.getAttribute("data-key");
   let server_name = this.getAttribute("data-server");
   let servers = getServers();
-  removeServer(server_name);
-  let trs = document.getElementsByClassName("server_" + server_name);
-  while(trs.length > 0){
-    trs[0].parentNode.removeChild(trs[0]);
+  if (removeServer(server_name)) {
+    let trs = document.getElementsByClassName("server_" + server_name);
+    while(trs.length > 0){
+      trs[0].parentNode.removeChild(trs[0]);
+    }
+    drawServers(servers, getMinHash(), getMaxHash());
   }
-  drawServers(servers, getMinHash(), getMaxHash());
+  
 }
 
 

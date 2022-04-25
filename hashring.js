@@ -38,6 +38,9 @@ function addServer(vnodes) {
 }
 
 function removeServer(server_name) {
+  if (parseInt(real_servers.size) == 1) {
+    return false;
+  }
   let caches = new Map();
   let ns, rs;
 
@@ -62,9 +65,8 @@ function removeServer(server_name) {
     rs.cache_size += v;
   });
   
-
   real_servers.delete(server_name);
-  
+  return true; 
 }
 
 function addToCache(str) {
@@ -72,7 +74,7 @@ function addToCache(str) {
   let k = getClosest(hash)
   let server = servers.get(k);
   let rs = real_servers.get(server.server_name);
-  
+
   server.cache_size += 1;
   rs.cache_size += 1
   
