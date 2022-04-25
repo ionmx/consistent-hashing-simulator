@@ -48,7 +48,7 @@ function removeServer(server_name) {
   // Get caches
   servers.forEach( (value, key) => {
     if (value.server_name == server_name) {
-      caches.set(key,value.cache_size);  
+      caches.set(key,{ cache_size: value.cache_size, cache: value.cache} );  
     }
   });
 
@@ -60,9 +60,10 @@ function removeServer(server_name) {
   // Reassign cache
   caches.forEach((v, k) => {
     ns = servers.get(getClosest(k));
-    ns.cache_size += v;
-    rs = real_servers.get(ns.server_name)
-    rs.cache_size += v;
+    ns.cache_size += v.cache_size;
+    ns.cache = v.cache;
+    rs = real_servers.get(ns.server_name);
+    rs.cache_size += v.cache_size;
   });
   
   real_servers.delete(server_name);
