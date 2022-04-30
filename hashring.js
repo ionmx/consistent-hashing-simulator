@@ -10,8 +10,8 @@ function hash_function(string) {
 
 function addServer(vnodes) {
     let server_name = 'S' + server_qty;
-    let moved = 0;
-    let rs;
+    let prev_sizes = new Map();
+    console.log('[ + ] Add new server ' + server_name);
     server_qty += 1
     let hash = hash_function(server_name)
     real_servers.set(server_name,{keys_size: 0 });
@@ -23,31 +23,50 @@ function addServer(vnodes) {
       servers.set(hash, {server_name: server_name, keys_size: 0, keys: new Map() });
     }
 
-    // Reassign keys
+    // Get previous keys size
+    real_servers.forEach( (s, key) => {
+      prev_sizes.set(key, { keys_size: s.keys_size } );
+    });
+
     servers.forEach( (s, key) => {
       s.keys.forEach( (v, k) => {
         let closest = getClosest(k);
         if (closest != key) {
           s.keys_size -= s.keys.get(k).length;
-          // Update previous new server size
-          rs = real_servers.get(s.server_name);
-          rs.keys_size -= s.keys.get(k).length;
+
+          // Update previous new real server size
+          let prev_rs = real_servers.get(s.server_name);
+          prev_rs.keys_size -= s.keys.get(k).length;
 
           let ns = servers.get(closest);
           ns.keys.set(k, v); 
           ns.keys_size += v.length;
           s.keys.delete(k);     
+
           // Update new real server size
-          rs = real_servers.get(ns.server_name);
-          rs.keys_size += v.length;     
+          let new_rs = real_servers.get(ns.server_name);
+          new_rs.keys_size += v.length;             
         }
       });
       
     });
+
+    // Log changes
+    real_servers.forEach( (s, key) => {
+      let prev = prev_sizes.get(key);
+      if (key != server_name && prev.keys_size != s.keys_size) {
+        console.log('Move ' + (prev.keys_size - s.keys_size) + ' keys from ' + key + ' to ' + server_name)
+      }
+    });
+
+    
 }
 
 
 function removeServer(server_name) {
+
+  console.log('[ - ] Remove server ' + server_name);
+
   if (parseInt(real_servers.size) == 1) {
     return false;
   }
@@ -74,6 +93,8 @@ function removeServer(server_name) {
     ns.keys = v.keys;
     rs = real_servers.get(ns.server_name);
     rs.keys_size += v.keys_size;
+
+    console.log('Move ' + v.keys_size + ' keys from ' + server_name + ' to ' + ns.server_name)
   });
   
   real_servers.delete(server_name);
