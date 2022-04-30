@@ -1,5 +1,5 @@
 import { drawRing, drawServers, setColors, blinkServer} from './canvas.js';
-import { addServer, removeServer, addToCache, resetRing, getServers, getMinHash, getMaxHash } from './hashring.js';
+import { addServer, removeServer, addData, resetRing, getServers } from './hashring.js';
 
 var isSimulating = false;
 var colors = ['#f44336','#f06292','#ab47bc','#673ab7','#5c6bc0','#2196f3','#01579b','#00acc1','#00897b','#43a047','#aed581','#f4ff81','#fff59d','#ffc109','#ff9800','#ff5722'];
@@ -26,7 +26,7 @@ document.getElementById("simulate-button").addEventListener("click", function() 
       addServer(vnodes);  
     }
     let servers = getServers();
-    drawServers(servers, getMinHash(), getMaxHash());
+    drawServers(servers);
     createTable(servers);
 
     button.innerHTML = 'Stop';
@@ -59,7 +59,7 @@ document.getElementById("add-server-button").addEventListener("click", function(
   let vnodes = document.getElementById("vnodes").value;
   addServer(vnodes);
   let servers = getServers()
-  drawServers(servers, getMinHash(), getMaxHash());
+  drawServers(servers);
   createTable(servers);
 });
 
@@ -72,7 +72,7 @@ var deleteServer = function() {
     while(trs.length > 0){
       trs[0].parentNode.removeChild(trs[0]);
     }
-    drawServers(servers, getMinHash(), getMaxHash());
+    drawServers(servers);
   }
   
 }
@@ -119,7 +119,7 @@ function createTable(servers) {
 
     td = document.createElement('td');
     td.id = 'keys_' + key;
-    td.innerHTML = value.cache_size;
+    td.innerHTML = value.keys_size;
     tr.appendChild(td);
 
     td = document.createElement('td');
@@ -139,6 +139,7 @@ function createTable(servers) {
       span.setAttribute('data-server', value.server_name);
       span.classList.add('delete-server');
       span.innerHTML = '×';
+
       if (vnodes > 0) {
         let bg_color = colors[c % colors.length];
         let trhead = document.createElement('tr');
@@ -165,7 +166,6 @@ function createTable(servers) {
         trhead.appendChild(tdh);
 
         tdh = document.createElement('td');
-        tdh.classList.add('brighter');
         tdh.style.backgroundColor = bg_color;
         tdh.appendChild(span);
         trhead.appendChild(tdh);
@@ -237,7 +237,7 @@ function processQueue() {
   let res = [];
   if (randomArray.length > 0) {
     let str = randomArray.pop();
-    res = addToCache(str);
+    res = addData(str);
     totalProc += 1
     document.getElementById('keys_' + res[0]).innerHTML = res[2];
     if (vnodes > 0) {
