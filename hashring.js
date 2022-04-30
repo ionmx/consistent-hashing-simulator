@@ -10,17 +10,42 @@ function hash_function(string) {
 
 function addServer(vnodes) {
     let server_name = 'S' + server_qty;
+    let moved = 0;
+    let rs;
     server_qty += 1
     let hash = hash_function(server_name)
     real_servers.set(server_name,{keys_size: 0 });
     servers.set(hash, {server_name: server_name, keys_size: 0, keys: new Map() });
-    var sn = '';
-    for (var i = 0; i < vnodes; i++) {
+    let sn = '';
+    for (let i = 0; i < vnodes; i++) {
       sn = server_name + ' Virtual ' + i;
       hash = hash_function(sn)
       servers.set(hash, {server_name: server_name, keys_size: 0, keys: new Map() });
     }
+
+    // Reassign keys
+    servers.forEach( (s, key) => {
+      s.keys.forEach( (v, k) => {
+        let closest = getClosest(k);
+        if (closest != key) {
+          s.keys_size -= s.keys.get(k).length;
+          // Update previous new server size
+          rs = real_servers.get(s.server_name);
+          rs.keys_size -= s.keys.get(k).length;
+
+          let ns = servers.get(closest);
+          ns.keys.set(k, v); 
+          ns.keys_size += v.length;
+          s.keys.delete(k);     
+          // Update new real server size
+          rs = real_servers.get(ns.server_name);
+          rs.keys_size += v.length;     
+        }
+      });
+      
+    });
 }
+
 
 function removeServer(server_name) {
   if (parseInt(real_servers.size) == 1) {
