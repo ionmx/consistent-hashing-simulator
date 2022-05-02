@@ -101,7 +101,7 @@ function createTable(servers) {
   
   th1.innerHTML = 'Server';
   th2.innerHTML = 'Keys';
-  th3.innerHTML = 'Percentage';
+  th3.innerHTML = 'Load';
   th4.innerHTML = '';
   
   rh.appendChild(th1);
