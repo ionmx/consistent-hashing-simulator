@@ -1,5 +1,6 @@
 import { drawRing, drawServers, setColors, blinkServer} from './canvas.js';
 import { addServer, removeServer, addData, resetRing, getServers } from './hashring.js';
+import { simulationLog, clearSimulationLog, log } from './log.js';
 
 var isSimulating = false;
 var colors = ['#f44336','#f06292','#ab47bc','#673ab7','#5c6bc0','#2196f3','#01579b','#00acc1','#00897b','#43a047','#aed581','#f4ff81','#fff59d','#ffc109','#ff9800','#ff5722'];
@@ -18,6 +19,8 @@ document.getElementById("simulate-button").addEventListener("click", function() 
   let input_qty = document.getElementById("qty");
   let input_vnodes = document.getElementById("vnodes");
   if (!isSimulating) {
+    clearSimulationLog()
+    simulationLog('Start simulation')
     isSimulating = true;
     resetRing();
     let qty = input_qty.value;
@@ -38,6 +41,7 @@ document.getElementById("simulate-button").addEventListener("click", function() 
     startProcess();
     
   } else {
+    simulationLog('Stop simulation')
     stopProcess();
     totalProc = 0;
     isSimulating = false;
@@ -295,11 +299,6 @@ function fillRandomArray(data) {
     randomArray.push(arts[i].title);
   }  
   startProcess();
-}
-
-function log(msg) {
-  document.getElementById('log').innerHTML = msg;
-  //console.log(msg);
 }
 
 window.onload = function(e) {

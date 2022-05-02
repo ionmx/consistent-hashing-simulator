@@ -62,3 +62,12 @@ table tr td {
 	color: #fff;
 	font-weight:  800;
 }
+
+#simulation-log {
+  margin-top:  2em;
+}
+
+.simulation-log-message {
+  font-size:  90%;
+  margin-bottom:  0.5em;
+}

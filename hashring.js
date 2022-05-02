@@ -1,3 +1,6 @@
+import { simulationLog } from './log.js';
+
+
 var crc32=function(r){for(var a,o=[],c=0;c<256;c++){a=c;for(var f=0;f<8;f++)a=1&a?3988292384^a>>>1:a>>>1;o[c]=a}for(var n=-1,t=0;t<r.length;t++)n=n>>>8^o[255&(n^r.charCodeAt(t))];return(-1^n)>>>0};
 
 const servers = new Map();
@@ -11,7 +14,7 @@ function hash_function(string) {
 function addServer(vnodes) {
     let server_name = 'S' + server_qty;
     let prev_sizes = new Map();
-    console.log('[ + ] Add new server ' + server_name);
+    simulationLog('[ + ] Add new server ' + server_name);
     server_qty += 1
     let hash = hash_function(server_name)
     real_servers.set(server_name,{keys_size: 0 });
@@ -55,7 +58,7 @@ function addServer(vnodes) {
     real_servers.forEach( (s, key) => {
       let prev = prev_sizes.get(key);
       if (key != server_name && prev.keys_size != s.keys_size) {
-        console.log('Move ' + (prev.keys_size - s.keys_size) + ' keys from ' + key + ' to ' + server_name)
+        simulationLog('Move ' + (prev.keys_size - s.keys_size) + ' keys from ' + key + ' to ' + server_name)
       }
     });
 
@@ -65,7 +68,7 @@ function addServer(vnodes) {
 
 function removeServer(server_name) {
 
-  console.log('[ - ] Remove server ' + server_name);
+  simulationLog('[ - ] Remove server ' + server_name);
 
   if (parseInt(real_servers.size) == 1) {
     return false;
@@ -94,7 +97,7 @@ function removeServer(server_name) {
     rs = real_servers.get(ns.server_name);
     rs.keys_size += v.keys_size;
 
-    console.log('Move ' + v.keys_size + ' keys from ' + server_name + ' to ' + ns.server_name)
+    simulationLog('Move ' + v.keys_size + ' keys from ' + server_name + ' to ' + ns.server_name)
   });
   
   real_servers.delete(server_name);
