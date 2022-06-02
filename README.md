@@ -1,4 +1,4 @@
 # Consistent Hashing Visual Simulator
-This simulator is for understand how Consistent Hashing works and visualize a simulation with controllable parameters.
+This simulator is for understand how [https://www.toptal.com/big-data/consistent-hashing](Consistent Hashing) works and visualize a simulation with controllable parameters.
 
-You can test it here: [https://suavizado.com/consistent-hashing-simulator/](https://suavizado.com/consistent-hashing-simulator/)
+DEMO: [https://ionmx.dev/demos/consistent-hashing-simulator/](https://ionmx.dev/demos/consistent-hashing-simulator/)
